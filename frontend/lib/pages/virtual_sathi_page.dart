@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:virtual_sathi/controllers/categories.dart';
 import 'package:virtual_sathi/controllers/posts.dart';
+import 'package:virtual_sathi/models/category_model.dart';
 import 'package:virtual_sathi/models/post_model.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
@@ -16,7 +18,7 @@ class VirtualSathi extends StatefulWidget {
 class _VirtualSathiState extends State<VirtualSathi> {
   late double width;
   late GoogleSignIn _googleSignIn;
-  List<PostModel> postModels = [];
+  List<CategoryModel> categoryModel = [];
   @override
   void initState() {
     width = 1;
@@ -25,16 +27,16 @@ class _VirtualSathiState extends State<VirtualSathi> {
       clientId:
           '273574887067-mo2p7vaa6u61kp2e4fn6tp9266rvg4bh.apps.googleusercontent.com',
     );
-    // getPosts();
+    getCategories();
     super.initState();
   }
 
-  // void getPosts() async {
-  //   final data = await PostsController.fetchPosts();
-  //   setState(() {
-  //     postModels = data;
-  //   });
-  // }
+  void getCategories() async {
+    final data = await CategoriesController.fetchCategories();
+    setState(() {
+      categoryModel = data;
+    });
+  }
 
   Future<void> getAnonymousAccount() async {
     UserCredential userCredential =
@@ -50,6 +52,15 @@ class _VirtualSathiState extends State<VirtualSathi> {
       print(_googleSignIn.currentUser);
     } catch (error) {
       print(error);
+    }
+  }
+
+  Future<List<PostModel>> fetchPostsFiltered(bool isFiltered,
+      [String? categoryID]) async {
+    if (isFiltered && categoryID != null) {
+      return PostsController.fetchPostsByCategories(categoryID);
+    } else {
+      return PostsController.fetchPosts();
     }
   }
 
@@ -177,79 +188,89 @@ class _VirtualSathiState extends State<VirtualSathi> {
           ),
         ],
       ),
-      body: Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * width,
-            child: FutureBuilder<List<PostModel>>(
-              future: PostsController.fetchPosts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text('Error loading posts'),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      return PostWidget(
-                        postModel: snapshot.data![index],
+          Flexible(flex: 1, child: Text('Categories: ${categoryModel.length}')),
+          Flexible(
+            flex: 9,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * width,
+                  child: FutureBuilder<List<PostModel>>(
+                    future: fetchPostsFiltered(
+                        true, '2ae3d445-84ee-4dcc-bbf0-6b4cadc93646'),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Error loading posts'),
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return PostWidget(
+                              postModel: snapshot.data![index],
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
-                );
-              },
-            ),
-          ),
-          // const VerticalDivider(),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? const Color.fromARGB(255, 30, 9, 9)
-                  : const Color.fromARGB(255, 20, 20, 20),
-              child: Stack(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                ),
+                // const VerticalDivider(),
+                Expanded(
+                  child: Container(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(255, 30, 9, 9)
+                        : const Color.fromARGB(255, 20, 20, 20),
+                    child: Stack(
                       children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Type a message',
-                            border: OutlineInputBorder(),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextField(
+                                decoration: InputDecoration(
+                                  hintText: 'Type a message',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  width = width == 1 ? 0.7 : 1;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.close_rounded,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            width = width == 1 ? 0.7 : 1;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.close_rounded,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

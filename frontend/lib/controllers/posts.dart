@@ -15,6 +15,18 @@ class PostsController {
     }
   }
 
+  static Future<List<PostModel>> fetchPostsByCategories(
+      String categoriesID) async {
+    final response = await http.get(
+        Uri.parse('http://localhost:3000/api/categories/$categoriesID/posts'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((e) => PostModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  }
+
   static Future<bool> addPost(
       {required String title,
       required String description,
@@ -36,9 +48,8 @@ class PostsController {
         return true;
       } else {
         return false;
-      } 
+      }
     } catch (e) {
-   
       return false;
     }
   }
