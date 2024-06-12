@@ -12,23 +12,24 @@ model Post{
       title String
       description String
       userId String
-      categories Category[] @relation("PostToCategory")
+    categoryId String?
+    category Category? @relation("PostToCategory", fields: [categoryId], references: [id])
 
       createdAt DateTime @default(now())
       updataedAt DateTime @updatedAt
+
+      @@index([categoryId])
 }
 
 model Category{
     id String @id @default(uuid())
     name String
-    postId String
-    post Post @relation("PostToCategory", fields: [postId], references: [id])
+      posts Post[] @relation("PostToCategory")
     videos Video[] @relation("videoToCategory") 
 
     createdAt DateTime @default(now())
     updataedAt DateTime @updatedAt
-
-    @@index([postId])   
+  
 }
 
 model Video{
