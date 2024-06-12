@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
@@ -11,12 +12,17 @@ class VirtualSathi extends StatefulWidget {
 
 class _VirtualSathiState extends State<VirtualSathi> {
   late double width;
-
   @override
   void initState() {
     width = 1;
 
     super.initState();
+  }
+
+  void getAnonymousAccount() async {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInAnonymously();
+    print(userCredential.user!.uid);
   }
 
   @override
@@ -87,7 +93,9 @@ class _VirtualSathiState extends State<VirtualSathi> {
                                 onChanged: (value) {},
                               ),
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  getAnonymousAccount();
+                                },
                                 child: const Text('Post'),
                               ),
                             ],
@@ -113,19 +121,54 @@ class _VirtualSathiState extends State<VirtualSathi> {
           // const VerticalDivider(),
           Expanded(
             child: Container(
-              color: Colors.grey,
+              color: Theme.of(context).brightness == Brightness.dark? Color.fromARGB(255, 30, 9, 9): const Color.fromARGB(255, 20, 20, 20),
+              child: Stack(
+                children: [
+                  const Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'Type a message',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            width = width == 1 ? 0.7 : 1;
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.close_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            width = width == 1 ? 0.7 : 1;
-          });
-        },
-        child: const Icon(Icons.chat_bubble_outline),
-      ),
+      floatingActionButton: width == 1
+          ? FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  width = width == 1 ? 0.7 : 1;
+                });
+              },
+              child: const Icon(Icons.chat_bubble_outline),
+            )
+          : null,
     );
   }
 }

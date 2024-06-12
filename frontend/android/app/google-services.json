@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "998115389624",
+    "project_id": "virtualsathi-463f0",
+    "storage_bucket": "virtualsathi-463f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998115389624:android:b84dbef3dbca02c500844d",
+        "android_client_info": {
+          "package_name": "com.example.virtual_sathi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQvXa1Xt2SOSUsbNM_8mAriAj6PCfOCK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

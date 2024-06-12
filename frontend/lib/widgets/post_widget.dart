@@ -8,8 +8,14 @@ class PostWidget extends StatelessWidget {
     return const Card(
       child: ListTile(
         leading: Icon(Icons.person),
-        title: Text('John Doe'),
-        subtitle: Text('This is a post.'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('John Doe'),
+            Chip(label: Text('Category')),
+          ],
+        ),
+        subtitle: Text('This is a post. Lorem ipsum dolor sit amet. '),
       ),
     );
   }
