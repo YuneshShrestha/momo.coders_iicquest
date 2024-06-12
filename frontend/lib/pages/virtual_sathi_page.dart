@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
 
 class VirtualSathi extends StatefulWidget {
@@ -10,9 +11,11 @@ class VirtualSathi extends StatefulWidget {
 
 class _VirtualSathiState extends State<VirtualSathi> {
   late double width;
+
   @override
   void initState() {
     width = 1;
+
     super.initState();
   }
 
@@ -24,7 +27,10 @@ class _VirtualSathiState extends State<VirtualSathi> {
         actions: [
           IconButton(
             icon: const Icon(Icons.event_note_outlined),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const EventsPage()));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.add),
@@ -34,7 +40,7 @@ class _VirtualSathiState extends State<VirtualSathi> {
                   builder: (context) {
                     return AlertDialog(
                       content: SizedBox(
-                        height: 200,
+                        height: 300,
                         child: SingleChildScrollView(
                           child: Column(
                             children: [

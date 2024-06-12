@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:virtual_sathi/virtual_sathi_page.dart';
+
+import 'package:virtual_sathi/pages/virtual_sathi_page.dart';
 
 void main() {
   runApp(const MyApp());
