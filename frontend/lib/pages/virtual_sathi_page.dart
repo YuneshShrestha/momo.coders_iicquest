@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:virtual_sathi/controllers/posts.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
 
@@ -26,10 +27,12 @@ class _VirtualSathiState extends State<VirtualSathi> {
     super.initState();
   }
 
-  void getAnonymousAccount() async {
+  Future<void> getAnonymousAccount() async {
     UserCredential userCredential =
         await FirebaseAuth.instance.signInAnonymously();
-    print(userCredential.user!.uid);
+    if (userCredential.user != null) {
+      print('User ID: ${userCredential.user!.uid}');
+    }
   }
 
   Future<void> _handleSignIn() async {
@@ -123,20 +126,27 @@ class _VirtualSathiState extends State<VirtualSathi> {
                                 ],
                               ),
                               ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (FirebaseAuth.instance.currentUser ==
                                       null) {
-                                    getAnonymousAccount();
+                                    await getAnonymousAccount();
                                   }
-                                  String json = '''
-                                  {
-                                    "title": "${_titleController.text}",
-                                    "description": "${_descriptionController.text}",
-                                    "category": "$_category"
-                                    "author": "${FirebaseAuth.instance.currentUser!.uid}"
+
+                                  try {
+                                    final data = await PostsController.addPost(
+                                      title: _titleController.text,
+                                      description: _descriptionController.text,
+                                      userId: FirebaseAuth
+                                          .instance.currentUser!.uid,
+                                    );
+                                    print(data);
+                                    if (data == true && context.mounted) {
+                                      Navigator.pop(context);
+                                      
+                                    }
+                                  } catch (e) {
+                                    print(e);
                                   }
-                                  ''';
-                                  print(json);
                                 },
                                 child: const Text('Post'),
                               ),
