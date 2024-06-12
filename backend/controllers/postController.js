@@ -19,11 +19,13 @@ const getAllPosts = async (req, res) => {
 const getSinglePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const post = await prisma.get.findUnique({
+    console.log(id);
+    const post = await prisma.post.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
+    console.log(post);
 
     if (!post) {
       return res.status(404).json({ error: "Post not found." });
@@ -95,7 +97,7 @@ const updatePost = async (req, res) => {
     const { title, description } = req.body;
     const post = await prisma.post.update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         title,
