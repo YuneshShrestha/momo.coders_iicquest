@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:virtual_sathi/controllers/posts.dart';
+import 'package:virtual_sathi/models/post_model.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
 
@@ -15,6 +16,7 @@ class VirtualSathi extends StatefulWidget {
 class _VirtualSathiState extends State<VirtualSathi> {
   late double width;
   late GoogleSignIn _googleSignIn;
+  List<PostModel> postModels = [];
   @override
   void initState() {
     width = 1;
@@ -23,9 +25,16 @@ class _VirtualSathiState extends State<VirtualSathi> {
       clientId:
           '273574887067-mo2p7vaa6u61kp2e4fn6tp9266rvg4bh.apps.googleusercontent.com',
     );
-
+    // getPosts();
     super.initState();
   }
+
+  // void getPosts() async {
+  //   final data = await PostsController.fetchPosts();
+  //   setState(() {
+  //     postModels = data;
+  //   });
+  // }
 
   Future<void> getAnonymousAccount() async {
     UserCredential userCredential =
@@ -142,7 +151,6 @@ class _VirtualSathiState extends State<VirtualSathi> {
                                     print(data);
                                     if (data == true && context.mounted) {
                                       Navigator.pop(context);
-                                      
                                     }
                                   } catch (e) {
                                     print(e);
@@ -173,11 +181,29 @@ class _VirtualSathiState extends State<VirtualSathi> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width * width,
-            child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const PostWidget();
-                }),
+            child: FutureBuilder<List<PostModel>>(
+              future: PostsController.fetchPosts(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('Error loading posts'),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return PostWidget(
+                      postModel: snapshot.data![index],
+                    );
+                  },
+                );
+              },
+            ),
           ),
           // const VerticalDivider(),
           Expanded(
