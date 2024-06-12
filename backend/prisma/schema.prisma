@@ -13,6 +13,9 @@ model Post{
       description String
       userId String
       categories Category[] @relation("PostToCategory")
+
+      createdAt DateTime @default(now())
+      updataedAt DateTime @updatedAt
 }
 
 model Category{
@@ -20,6 +23,22 @@ model Category{
     name String
     postId String
     post Post @relation("PostToCategory", fields: [postId], references: [id])
-    
+    videos Video[] @relation("videoToCategory") 
+
+    createdAt DateTime @default(now())
+    updataedAt DateTime @updatedAt
+
     @@index([postId])   
+}
+
+model Video{
+    id String @id @default(uuid())
+    url String
+    categoryId String
+    category Category @relation("videoToCategory",fields: [categoryId], references: [id])
+
+    createdAt DateTime @default(now())
+    updataedAt DateTime @updatedAt
+
+    @@index([categoryId])
 }
