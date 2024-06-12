@@ -7,7 +7,7 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Card(
+    return Card(
       child: ListTile(
         leading: Icon(Icons.person),
         title: Column(

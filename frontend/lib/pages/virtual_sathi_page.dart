@@ -61,7 +61,7 @@ class _VirtualSathiState extends State<VirtualSathi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Virtual Sathi'),
+        title: const Text('Aparichit Sathi'),
         actions: [
           IconButton(
             icon: const Icon(Icons.event_note_outlined),
@@ -194,13 +194,19 @@ class _VirtualSathiState extends State<VirtualSathi> {
                     child: Text('Error loading posts'),
                   );
                 }
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return PostWidget(
-                      postModel: snapshot.data![index],
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return PostWidget(
+                        postModel: snapshot.data![index],
+                      );
+                    },
+                  ),
                 );
               },
             ),
