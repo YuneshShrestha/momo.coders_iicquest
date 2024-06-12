@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Post{
+      id String @id @default(uuid())
+      title String
+      description String
+      userId String
+      categories Category[] @relation("PostToCategory")
+}
+
+model Category{
+    id String @id @default(uuid())
+    name String
+    postId String
+    post Post @relation("PostToCategory", fields: [postId], references: [id])
+    
+    @@index([postId])   
+}
