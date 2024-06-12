@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
 
@@ -12,9 +13,15 @@ class VirtualSathi extends StatefulWidget {
 
 class _VirtualSathiState extends State<VirtualSathi> {
   late double width;
+  late GoogleSignIn _googleSignIn;
   @override
   void initState() {
     width = 1;
+
+    _googleSignIn = GoogleSignIn(
+      clientId:
+          '273574887067-mo2p7vaa6u61kp2e4fn6tp9266rvg4bh.apps.googleusercontent.com',
+    );
 
     super.initState();
   }
@@ -25,6 +32,19 @@ class _VirtualSathiState extends State<VirtualSathi> {
     print(userCredential.user!.uid);
   }
 
+  Future<void> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+      print(_googleSignIn.currentUser);
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  String? _category;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +54,12 @@ class _VirtualSathiState extends State<VirtualSathi> {
           IconButton(
             icon: const Icon(Icons.event_note_outlined),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const EventsPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EventsPage(),
+                ),
+              );
             },
           ),
           IconButton(
@@ -51,8 +75,9 @@ class _VirtualSathiState extends State<VirtualSathi> {
                           child: Column(
                             children: [
                               const Text('Create a post'),
-                              const TextField(
-                                decoration: InputDecoration(
+                              TextField(
+                                controller: _titleController,
+                                decoration: const InputDecoration(
                                   hintText: 'What\'s on your mind?',
                                   border: OutlineInputBorder(),
                                 ),
@@ -60,9 +85,10 @@ class _VirtualSathiState extends State<VirtualSathi> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              const TextField(
+                              TextField(
                                 maxLines: 3,
-                                decoration: InputDecoration(
+                                controller: _descriptionController,
+                                decoration: const InputDecoration(
                                   hintText: 'Description',
                                   border: OutlineInputBorder(),
                                 ),
@@ -76,6 +102,11 @@ class _VirtualSathiState extends State<VirtualSathi> {
                                   border: OutlineInputBorder(),
                                 ),
                                 hint: const Text('Category'),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _category = value;
+                                  });
+                                },
                                 items: const [
                                   DropdownMenuItem(
                                     child: Text('General'),
@@ -90,11 +121,22 @@ class _VirtualSathiState extends State<VirtualSathi> {
                                     value: 'Help',
                                   ),
                                 ],
-                                onChanged: (value) {},
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  getAnonymousAccount();
+                                  if (FirebaseAuth.instance.currentUser ==
+                                      null) {
+                                    getAnonymousAccount();
+                                  }
+                                  String json = '''
+                                  {
+                                    "title": "${_titleController.text}",
+                                    "description": "${_descriptionController.text}",
+                                    "category": "$_category"
+                                    "author": "${FirebaseAuth.instance.currentUser!.uid}"
+                                  }
+                                  ''';
+                                  print(json);
                                 },
                                 child: const Text('Post'),
                               ),
@@ -105,6 +147,15 @@ class _VirtualSathiState extends State<VirtualSathi> {
                     );
                   });
             },
+          ),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              _handleSignIn();
+            },
+            child: const Text('Sign in with Google'),
           ),
         ],
       ),
@@ -121,16 +172,18 @@ class _VirtualSathiState extends State<VirtualSathi> {
           // const VerticalDivider(),
           Expanded(
             child: Container(
-              color: Theme.of(context).brightness == Brightness.dark? Color.fromARGB(255, 30, 9, 9): const Color.fromARGB(255, 20, 20, 20),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromARGB(255, 30, 9, 9)
+                  : const Color.fromARGB(255, 20, 20, 20),
               child: Stack(
                 children: [
                   const Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextField(
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Type a message',
                             border: OutlineInputBorder(),
                           ),

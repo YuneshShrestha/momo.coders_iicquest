@@ -12,7 +12,7 @@ class PostWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('John Doe'),
-            Chip(label: Text('Category')),
+            Chip(label: Text('Cat')),
           ],
         ),
         subtitle: Text('This is a post. Lorem ipsum dolor sit amet. '),
