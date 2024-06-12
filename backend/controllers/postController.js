@@ -39,13 +39,14 @@ const getSinglePost = async (req, res) => {
 // create post
 const createPost = async (req, res) => {
   try {
-    const { title, description, userId } = req.body;
+    const { title, description, userId, categoryId } = req.body;
 
     const post = await prisma.post.create({
       data: {
         title,
         description,
         userId,
+        categoryId,
       },
     });
 
