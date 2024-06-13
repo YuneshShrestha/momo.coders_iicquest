@@ -64,6 +64,8 @@ class _VirtualSathiState extends State<VirtualSathi> {
     }
   }
 
+
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? _category;
@@ -71,202 +73,241 @@ class _VirtualSathiState extends State<VirtualSathi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Aparichit Sathi'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.event_note_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EventsPage(),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: SizedBox(
-                        height: 300,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              const Text('Create a post'),
-                              TextField(
-                                controller: _titleController,
-                                decoration: const InputDecoration(
-                                  hintText: 'What\'s on your mind?',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              TextField(
-                                maxLines: 3,
-                                controller: _descriptionController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Description',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              // Category dropdown
-                              DropdownButtonFormField<String>(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                ),
-                                hint: const Text('Category'),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _category = value;
-                                  });
-                                },
-                                items: const [
-                                  DropdownMenuItem(
-                                    child: Text('General'),
-                                    value: 'General',
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text('Event'),
-                                    value: 'Event',
-                                  ),
-                                  DropdownMenuItem(
-                                    child: Text('Help'),
-                                    value: 'Help',
-                                  ),
-                                ],
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  if (FirebaseAuth.instance.currentUser ==
-                                      null) {
-                                    await getAnonymousAccount();
-                                  }
-
-                                  try {
-                                    final data = await PostsController.addPost(
-                                      title: _titleController.text,
-                                      description: _descriptionController.text,
-                                      userId: FirebaseAuth
-                                          .instance.currentUser!.uid,
-                                    );
-                                    print(data);
-                                    if (data == true && context.mounted) {
-                                      Navigator.pop(context);
-                                    }
-                                  } catch (e) {
-                                    print(e);
-                                  }
-                                },
-                                child: const Text('Post'),
-                              ),
-                            ],
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                child: AppBar(
+                  title: const Text('Aparichit Sathi'),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.event_note_outlined),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EventsPage(),
                           ),
-                        ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: SizedBox(
+                                  height: 300,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        const Text('Create a post'),
+                                        TextField(
+                                          controller: _titleController,
+                                          decoration: const InputDecoration(
+                                            hintText: 'What\'s on your mind?',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        TextField(
+                                          maxLines: 3,
+                                          controller: _descriptionController,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Description',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        // Category dropdown
+                                        DropdownButtonFormField<String>(
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          hint: const Text('Category'),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _category = value;
+                                            });
+                                          },
+                                          items: const [
+                                            DropdownMenuItem(
+                                              child: Text('General'),
+                                              value: 'General',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text('Event'),
+                                              value: 'Event',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text('Help'),
+                                              value: 'Help',
+                                            ),
+                                          ],
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            if (FirebaseAuth
+                                                    .instance.currentUser ==
+                                                null) {
+                                              await getAnonymousAccount();
+                                            }
+
+                                            try {
+                                              final data =
+                                                  await PostsController.addPost(
+                                                title: _titleController.text,
+                                                description:
+                                                    _descriptionController.text,
+                                                userId: FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                              );
+                                              print(data);
+                                              if (data == true &&
+                                                  context.mounted) {
+                                                Navigator.pop(context);
+                                              }
+                                            } catch (e) {
+                                              print(e);
+                                            }
+                                          },
+                                          child: const Text('Post'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                    ),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.red,
                       ),
-                    );
-                  });
-            },
-          ),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            onPressed: () {
-              _handleSignIn();
-            },
-            child: const Text('Sign in with Google'),
-          ),
-        ],
-      ),
+                      onPressed: () {
+                        _handleSignIn();
+                      },
+                      child: const Text('Sign in with Google'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
-          Flexible(flex: 1, child: Text('Categories: ${categoryModel.length}')),
+          Flexible(
+            flex: 1,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.75,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                    child: DropdownButtonFormField<CategoryModel>(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      hint: const Text('Category'),
+                      onChanged: (value) {
+                        if (value == null) {
+                          return;
+                        }
+                        setState(() {
+                          _category = value.id ?? '';
+                        });
+                      },
+                      items: categoryModel.map((CategoryModel category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category.name ?? 'Unknown Category'),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Flexible(
             flex: 9,
-            child: Row(
+            child: Stack(
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * width,
-                  child: FutureBuilder<List<PostModel>>(
-                    future: fetchPostsFiltered(
-                        true, '2ae3d445-84ee-4dcc-bbf0-6b4cadc93646'),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(
-                          child: Text('Error loading posts'),
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        child: ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return PostWidget(
-                              postModel: snapshot.data![index],
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        child: FutureBuilder<List<PostModel>>(
+                          future: fetchPostsFiltered(
+                            false,
+                          ),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Error loading posts'),
+                              );
+                            }
+                            return ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return PostWidget(
+                                  postModel: snapshot.data![index],
+                                  isLast: index == snapshot.data!.length - 1,
+                                );
+                              },
                             );
                           },
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
+
                 // const VerticalDivider(),
-                Expanded(
+                Positioned(
+                  right: 0,
+                  bottom: 0,
                   child: Container(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    height: MediaQuery.of(context).size.height,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? const Color.fromARGB(255, 30, 9, 9)
                         : const Color.fromARGB(255, 20, 20, 20),
-                    child: Stack(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextField(
-                                decoration: InputDecoration(
-                                  hintText: 'Type a message',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  width = width == 1 ? 0.7 : 1;
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.close_rounded,
-                              ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Type a message',
+                              border: OutlineInputBorder(),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

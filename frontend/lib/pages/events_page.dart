@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:virtual_sathi/controllers/events.dart';
+import 'package:virtual_sathi/models/videos_model.dart';
 import 'package:virtual_sathi/widgets/event_widget.dart';
 
 class EventsPage extends StatefulWidget {
@@ -9,6 +12,32 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchEvents();
+  }
+
+  Future<void> getAnonymousAccount() async {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInAnonymously();
+    if (userCredential.user != null) {
+      print('User ID: ${userCredential.user!.uid}');
+    }
+  }
+
+  List<EventsModel> _events = [];
+  void _fetchEvents() async {
+    await getAnonymousAccount();
+    final User? user = FirebaseAuth.instance.currentUser;
+    final List<EventsModel> events = await EventsController.getVideos(
+      user!.uid,
+    );
+    setState(() {
+      _events = events;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,17 +149,23 @@ class _EventsPageState extends State<EventsPage> {
             ),
           ],
         ),
-        body: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 3,
-          ),
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            return const EventWidget();
-          },
-        ));
+        body: _events.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 3,
+                ),
+                itemCount: _events.length,
+                itemBuilder: (context, index) {
+                  return EventWidget(
+                    eventModel: _events[index],
+                  );
+                },
+              ));
   }
 }

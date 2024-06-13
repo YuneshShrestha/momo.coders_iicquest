@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:virtual_sathi/models/videos_model.dart';
 
 class EventWidget extends StatefulWidget {
-  const EventWidget({super.key});
-
+  const EventWidget({
+    super.key,
+    required this.eventModel,
+  });
+  final EventsModel eventModel;
   @override
   State<EventWidget> createState() => _EventWidgetState();
 }
@@ -29,8 +33,9 @@ class _EventWidgetState extends State<EventWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final Uri toLaunch =
-        Uri(scheme: 'https', host: 'www.cylog.org', path: 'headers/');
+    // get only www.google.com from https://www.google.com/headers/
+    final url = widget.eventModel.url!.split('/')[2];
+    final Uri toLaunch = Uri(scheme: 'https', host: url, path: 'headers/');
     return SizedBox(
       height: 1,
       child: Card(
