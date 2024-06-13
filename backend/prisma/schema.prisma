@@ -29,7 +29,6 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([id]) // Assuming you want an index on the Category ID for faster lookups
 }
 
 model Video {
@@ -39,4 +38,6 @@ model Video {
   category   Category @relation("VideoToCategory", fields: [categoryId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([categoryId])
 }

@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getAllCategories,
+  getSingleCategory,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -11,6 +12,9 @@ const {
 
 // get all categories
 router.get("/", getAllCategories);
+
+// get single category
+router.get("/:id", getSingleCategory);
 
 // create category
 router.post("/", createCategory);

@@ -16,6 +16,29 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+// get single category
+const getSingleCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await prisma.category.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        videos: true,
+      },
+    });
+
+    if (!category) {
+      return res.statu(404).json({ error: "Category not found." });
+    }
+
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 // create a category
 const createCategory = async (req, res) => {
   try {
@@ -96,6 +119,7 @@ const deleteCategories = async (req, res) => {
 
 module.exports = {
   getAllCategories,
+  getSingleCategory,
   createCategory,
   updateCategory,
   deleteCategory,
