@@ -15,11 +15,13 @@ model Post{
     categoryId String?
     category Category? @relation("PostToCategory", fields: [categoryId], references: [id])
 
+    comments Comments[] @relation("postToComments")
+
       createdAt DateTime @default(now())
       updataedAt DateTime @updatedAt
 
       @@index([categoryId])
-}
+} 
 
 model Category {
   id        String   @id @default(uuid())
@@ -40,4 +42,21 @@ model Video {
   updatedAt  DateTime @updatedAt
 
   @@index([categoryId])
+}
+
+enum UserType{
+  ANONYMOUS
+  THERAPIST
+}
+
+model Comments{
+  id String @id @default(uuid())
+  comment String
+  postId String
+  post Post @relation("postToComments",fields: [postId], references: [id])
+  userId String
+  userType UserType 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
