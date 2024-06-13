@@ -7,6 +7,7 @@ import 'package:virtual_sathi/models/category_model.dart';
 import 'package:virtual_sathi/models/post_model.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
 import 'package:virtual_sathi/widgets/post_widget.dart';
+// import 'package:tflite_flutter/tflite_flutter.dart';
 
 class VirtualSathi extends StatefulWidget {
   const VirtualSathi({super.key});
@@ -16,18 +17,18 @@ class VirtualSathi extends StatefulWidget {
 }
 
 class _VirtualSathiState extends State<VirtualSathi> {
-  late double width;
+  late bool isPoppedUp;
   late GoogleSignIn _googleSignIn;
   List<CategoryModel> categoryModel = [];
   @override
   void initState() {
-    width = 1;
-
+    isPoppedUp = false;
     _googleSignIn = GoogleSignIn(
       clientId:
           '273574887067-mo2p7vaa6u61kp2e4fn6tp9266rvg4bh.apps.googleusercontent.com',
     );
     getCategories();
+    // loadTFLiteModel();
     super.initState();
   }
 
@@ -55,6 +56,12 @@ class _VirtualSathiState extends State<VirtualSathi> {
     }
   }
 
+  // void loadTFLiteModel() async {
+  //   final interpreter = await Interpreter.fromAsset('assets/model.tflite');
+  //   print(interpreter.getInputTensors());
+  //   print(interpreter.getOutputTensors());
+  // }
+
   Future<List<PostModel>> fetchPostsFiltered(bool isFiltered,
       [String? categoryID]) async {
     if (isFiltered && categoryID != null) {
@@ -63,8 +70,6 @@ class _VirtualSathiState extends State<VirtualSathi> {
       return PostsController.fetchPosts();
     }
   }
-
-
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -206,7 +211,6 @@ class _VirtualSathiState extends State<VirtualSathi> {
           )),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
           Flexible(
             flex: 1,
@@ -286,46 +290,56 @@ class _VirtualSathiState extends State<VirtualSathi> {
                 ),
 
                 // const VerticalDivider(),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.25,
-                    height: MediaQuery.of(context).size.height,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? const Color.fromARGB(255, 30, 9, 9)
-                        : const Color.fromARGB(255, 20, 20, 20),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Type a message',
-                              border: OutlineInputBorder(),
+                isPoppedUp
+                    ? Positioned(
+                        right: 0,
+                        bottom: 60,
+                        top: 40,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          height: MediaQuery.of(context).size.height,
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'Type a message',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                        ),
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: width == 1
-          ? FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  width = width == 1 ? 0.7 : 1;
-                });
-              },
-              child: const Icon(Icons.chat_bubble_outline),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            isPoppedUp = !isPoppedUp;
+          });
+        },
+        backgroundColor: isPoppedUp ? Colors.red : Colors.deepPurple,
+        child: isPoppedUp
+            ? const Icon(Icons.close)
+            : const Icon(Icons.chat_bubble_outline),
+      ),
     );
   }
 }

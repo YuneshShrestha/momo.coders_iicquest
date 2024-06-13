@@ -1,7 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:virtual_sathi/controllers/comments.dart';
-import 'package:virtual_sathi/models/comment_model.dart';
 
 import 'package:virtual_sathi/models/post_model.dart';
 import 'package:virtual_sathi/widgets/comment_widget.dart';

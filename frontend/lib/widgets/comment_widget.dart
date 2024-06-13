@@ -44,11 +44,22 @@ class _CommentWidgetState extends State<CommentWidget> {
     });
   }
 
+  String generatedComment(String? comment) {
+    if (comment == null) {
+      return '';
+    }
+    return comment.length > 20 ? "${comment.substring(0, 20)}..." : comment;
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
+        ? const SizedBox(
+            height: 300,
+            width: 400,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           )
         : SizedBox(
             height: 300,
@@ -65,6 +76,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
                       return SizedBox(
+                        width: 200,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,20 +99,30 @@ class _CommentWidgetState extends State<CommentWidget> {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(":",
-                                        style: TextStyle(fontSize: 20)),
+                                    const SizedBox(
+                                      width: 20,
+                                      child: Text(":",
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          comments[index].comment ??
-                                              'No user id',
-                                        ),
-                                      ],
+                                    SizedBox(
+                                      width: 160,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            comments[index].comment ??
+                                                'No comment',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -145,6 +167,11 @@ class _CommentWidgetState extends State<CommentWidget> {
                                 ),
                               ],
                             ),
+                            // If last show  nothin
+                            if (index != comments.length - 1)
+                              const SizedBox(
+                                height: 10,
+                              )
                           ],
                         ),
                       );
