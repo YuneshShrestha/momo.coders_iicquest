@@ -5,11 +5,21 @@ const prisma = new PrismaClient();
 // get all posts
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany();
-    if (!posts) {
+    const postsWithComments = await prisma.post.findMany({
+      include: {
+        comments: true,
+      },
+    });
+
+    const postsWithCommentCount = postsWithComments.map((post) => ({
+      ...post,
+      commentsCount: post.comments.length,
+    }));
+
+    if (postsWithCommentCount.length === 0) {
       return res.status(404).json({ error: "No posts found." });
     }
-    res.status(200).json(posts);
+    res.status(200).json(postsWithCommentCount);
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
   }
@@ -18,8 +28,14 @@ const getAllPosts = async (req, res) => {
 // get single post
 const getSinglePost = async (req, res) => {
   try {
+    console.log(req.params);
     const { id } = req.params;
-    console.log(id);
+
+
+    if (!id) {
+      return res.status(400).json({ error: "Post id is required." });
+    }
+
     const post = await prisma.post.findUnique({
       where: {
         id,
@@ -40,6 +56,18 @@ const getSinglePost = async (req, res) => {
 const createPost = async (req, res) => {
   try {
     const { title, description, userId, categoryId } = req.body;
+
+    const existingPost = await prisma.post.findFirst({
+      where: {
+        AND: [{ title }, { description }],
+      },
+    });
+
+    if (existingPost) {
+      return res.status(409).json({
+        error: "A post with the same title and description already exists.",
+      });
+    }
 
     const post = await prisma.post.create({
       data: {
@@ -76,6 +104,11 @@ const deletePosts = async (req, res) => {
 const deleteSinglePost = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "Post id is required." });
+    }
+
     const post = await prisma.post.delete({
       where: {
         id: parseInt(id),
@@ -95,6 +128,9 @@ const deleteSinglePost = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: "Post id is required." });
+    }
     const { title, description } = req.body;
     const post = await prisma.post.update({
       where: {
