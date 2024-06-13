@@ -74,10 +74,15 @@ class _CommentWidgetState extends State<CommentWidget> {
                               children: [
                                 Row(
                                   children: [
-                                    const CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          "https://seeklogo.com/images/A/anonymous-logo-7E968E8797-seeklogo.com.png"),
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(comments[
+                                                      index]
+                                                  .userType ==
+                                              "ANONYMOUS"
+                                          ? "https://seeklogo.com/images/A/anonymous-logo-7E968E8797-seeklogo.com.png"
+                                          : "https://png.pngtree.com/png-clipart/20240101/original/pngtree-therapist-icon-healthcare-photo-png-image_13990010.png"),
                                       radius: 20,
+                                      backgroundColor: Colors.white,
                                     ),
                                     const SizedBox(
                                       width: 10,

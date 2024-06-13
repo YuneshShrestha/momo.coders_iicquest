@@ -38,8 +38,8 @@ class _PostWidgetState extends State<PostWidget> {
 
   Future<bool> isAnonymousUser() async {
     final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null && user.isAnonymous) {
-      return true;
+    if (user != null) {
+      return user.isAnonymous;
     }
     return false;
   }
