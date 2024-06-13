@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const postRoutes = require("./routes/post");
 const categoryRoutes = require("./routes/category");
+const videoRoutes = require("./routes/video");
 
 const primsa = require("@prisma/client");
 
@@ -29,6 +30,7 @@ app.get("/api/categories/:categoryId/posts", async (req, res) => {
 // Routes
 app.use("/api/posts", postRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/videos", videoRoutes);
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

@@ -21,25 +21,23 @@ model Post{
       @@index([categoryId])
 }
 
-model Category{
-    id String @id @default(uuid())
-    name String
-      posts Post[] @relation("PostToCategory")
-    videos Video[] @relation("videoToCategory") 
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  posts     Post[]   @relation("PostToCategory")
+  videos    Video[]  @relation("VideoToCategory")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    createdAt DateTime @default(now())
-    updataedAt DateTime @updatedAt
-  
 }
 
-model Video{
-    id String @id @default(uuid())
-    url String
-    categoryId String
-    category Category @relation("videoToCategory",fields: [categoryId], references: [id])
+model Video {
+  id         String   @id @default(uuid())
+  url        String
+  categoryId String
+  category   Category @relation("VideoToCategory", fields: [categoryId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    createdAt DateTime @default(now())
-    updataedAt DateTime @updatedAt
-
-    @@index([categoryId])
+  @@index([categoryId])
 }
