@@ -43,6 +43,23 @@ const getSingleCategory = async (req, res) => {
 const createCategory = async (req, res) => {
   try {
     const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: "Name is required." });
+    }
+
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        AND: [{ name }],
+      },
+    });
+
+    if (existingCategory) {
+      return res.status(409).json({
+        error: "Category already exists.",
+      });
+    }
+
     const category = await prisma.category.create({
       data: {
         name,

@@ -3,6 +3,7 @@ const express = require("express");
 const postRoutes = require("./routes/post");
 const categoryRoutes = require("./routes/category");
 const videoRoutes = require("./routes/video");
+const answerRoutes = require("./routes/answer");
 
 const primsa = require("@prisma/client");
 
@@ -14,14 +15,32 @@ app.use(express.json());
 
 // create comments
 app.post("/api/comments", async (req, res) => {
-  const { comment, postId, userId, userType } = req.body;
+  const { comment, postId, userId, userType, upVote, downVote } = req.body;
   try {
+    if (!comment || !postId || !userId || !userType) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    const existingComments = await prisma.comments.findFirst({
+      where: {
+        AND: [{ userId }, { postId }, { comment }],
+      },
+    });
+
+    if (existingComments) {
+      return res.status(409).json({
+        error: "You have already posted the same comment .",
+      });
+    }
+
     const comments = await prisma.comments.create({
       data: {
         comment,
         postId,
         userId,
         userType,
+        upVote,
+        downVote,
       },
     });
     res.status(200).json(comments);
@@ -64,6 +83,9 @@ app.get("/api/categories/:categoryId/posts", async (req, res) => {
 app.use("/api/posts", postRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/videos", videoRoutes);
+
+// get answer by prompt
+app.use("/api/answer", answerRoutes);
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
