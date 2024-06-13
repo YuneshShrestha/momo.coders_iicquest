@@ -8,6 +8,8 @@ const {
   createVideo,
   deleteVideos,
   deleteVideo,
+  getVideosByUserId,
+
 } = require("../controllers/videoController");
 
 // get all videos
@@ -24,5 +26,8 @@ router.delete("/", deleteVideos);
 
 //delete video
 router.delete("/:id", deleteVideo);
+
+// get videos by user id
+router.get("/user/:id", getVideosByUserId);
 
 module.exports = router;

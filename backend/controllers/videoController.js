@@ -85,6 +85,38 @@ const deleteVideo = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal server error." });
   }
+
+  //  Get videos By user id
+  // get videos by user id
+
+
+};
+const getVideosByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // get unique category ids from posts for the user
+    const userPosts = await prisma.post.findMany({
+      where: { userId: userId },
+      select: { categoryId: true }
+    });
+
+    const uniqueCategoryIds = [...new Set(userPosts.filter(post => post.categoryId !== null).map(post => post.categoryId.toString()))];
+    // fetch videos according to the category ids
+    const videos = await prisma.video.findMany({
+      where: { categoryId: { in: uniqueCategoryIds } }
+    });
+    console.log(videos);
+
+    if (!videos) {
+      return res.status(404).json({ error: "No videos found." });
+    }
+
+    res.status(200).json(videos);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error." });
+  }
 };
 
 module.exports = {
@@ -93,4 +125,5 @@ module.exports = {
   createVideo,
   deleteVideos,
   deleteVideo,
+  getVideosByUserId,
 };
