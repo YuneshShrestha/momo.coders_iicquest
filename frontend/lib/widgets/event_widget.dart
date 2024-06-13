@@ -6,8 +6,12 @@ class EventWidget extends StatefulWidget {
   const EventWidget({
     super.key,
     required this.eventModel,
+    required this.categoryName,
+    required this.index,
   });
   final EventsModel eventModel;
+  final String categoryName;
+  final int index;
   @override
   State<EventWidget> createState() => _EventWidgetState();
 }
@@ -54,10 +58,9 @@ class _EventWidgetState extends State<EventWidget> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text('Event Name'),
-                        Text('2070/12/01'),
+                        Text('Event Name ${widget.index + 1}'),
                         Chip(
-                          label: Text('Event Type'),
+                          label: Text(widget.categoryName),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

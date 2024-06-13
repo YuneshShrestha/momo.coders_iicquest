@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:virtual_sathi/controllers/categories.dart';
 import 'package:virtual_sathi/controllers/posts.dart';
+import 'package:virtual_sathi/controllers/prompt.dart';
 import 'package:virtual_sathi/models/category_model.dart';
 import 'package:virtual_sathi/models/post_model.dart';
 import 'package:virtual_sathi/pages/events_page.dart';
@@ -74,6 +77,8 @@ class _VirtualSathiState extends State<VirtualSathi> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? _category;
+  final TextEditingController _promptController = TextEditingController();
+  List<String> output = [];
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +91,7 @@ class _VirtualSathiState extends State<VirtualSathi> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: AppBar(
-                  title: const Text('Aparichit Sathi'),
+                  title: const Text('Virtual साथी'),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.event_note_outlined),
@@ -94,7 +99,9 @@ class _VirtualSathiState extends State<VirtualSathi> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const EventsPage(),
+                            builder: (context) => EventsPage(
+                              categoryModel: categoryModel,
+                            ),
                           ),
                         );
                       },
@@ -307,15 +314,64 @@ class _VirtualSathiState extends State<VirtualSathi> {
                           ),
                           width: MediaQuery.of(context).size.width * 0.25,
                           height: MediaQuery.of(context).size.height,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Type a message',
-                                    border: OutlineInputBorder(),
+                                const Flexible(
+                                    flex: 1, child: Text('Chat with Sathi')),
+                                Flexible(
+                                    flex: 12,
+                                    child: ListView.builder(
+                                      itemCount: output.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          title: Text(
+                                              "${index + 1}. ${output[index]} "),
+                                        );
+                                      },
+                                    )),
+                                Flexible(
+                                  flex: 2,
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 12,
+                                        child: TextField(
+                                          controller: _promptController,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Type a message',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                      ),
+                                      Flexible(
+                                        flex: 2,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.send),
+                                          onPressed: () async {
+                                            String promptList =
+                                                await PromptController
+                                                    .fetchComments(
+                                                        _promptController.text);
+                                            Map<String, dynamic> data =
+                                                jsonDecode(promptList);
+                                            print(data);
+                                            print(data['answer']);
+
+                                            setState(() {
+                                              data['answer'].forEach((element) {
+                                                output.add(element);
+                                              });
+                                              _promptController.clear();
+                                            });
+
+                                            print(output);
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],

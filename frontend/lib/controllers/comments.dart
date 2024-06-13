@@ -4,6 +4,24 @@ import 'package:http/http.dart' as http;
 import 'package:virtual_sathi/models/comment_model.dart';
 
 class CommentsController {
+  static Future<bool> isValidComment(String comment) async {
+    if (comment.isNotEmpty) {
+      final response =
+          await http.post(Uri.parse("http://127.0.0.1:5000/predict"),
+              body: json.encode({
+                "input": comment,
+              }));
+      print(response.body);
+      bool contains0 = response.body.contains("0");
+      if (contains0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
   static Future<List<CommentModel>> fetchComments(String postsID) async {
     final response = await http
         .get(Uri.parse('http://localhost:3000/api/posts/$postsID/comments/'));
@@ -22,6 +40,11 @@ class CommentsController {
       required String userId,
       required String userType}) async {
     try {
+      bool isValid = await isValidComment(comment);
+      print("is valid $isValid");
+      if (isValid) {
+        return false;
+      }
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/comments'),
         body: json.encode({

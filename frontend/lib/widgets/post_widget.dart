@@ -138,7 +138,7 @@ class _PostWidgetState extends State<PostWidget> {
                   },
                   child: isLoading
                       ? const CircularProgressIndicator()
-                      : const Text('3 comments'),
+                      : Text('${widget.postModel.commentsCount} comments'),
                 ),
               ),
             ),

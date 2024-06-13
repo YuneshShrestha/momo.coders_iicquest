@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:virtual_sathi/controllers/events.dart';
+import 'package:virtual_sathi/models/category_model.dart';
 import 'package:virtual_sathi/models/videos_model.dart';
 import 'package:virtual_sathi/widgets/event_widget.dart';
 
 class EventsPage extends StatefulWidget {
-  const EventsPage({super.key});
+  const EventsPage({super.key, required this.categoryModel});
+  final List<CategoryModel> categoryModel;
 
   @override
   State<EventsPage> createState() => _EventsPageState();
@@ -36,6 +38,15 @@ class _EventsPageState extends State<EventsPage> {
     setState(() {
       _events = events;
     });
+  }
+
+  String getCategoryNameFromEventCatId(String id) {
+    for (var category in widget.categoryModel) {
+      if (category.id == id) {
+        return category.name ?? "NA";
+      }
+    }
+    return "NA";
   }
 
   @override
@@ -164,6 +175,10 @@ class _EventsPageState extends State<EventsPage> {
                 itemBuilder: (context, index) {
                   return EventWidget(
                     eventModel: _events[index],
+                    categoryName: getCategoryNameFromEventCatId(
+                      _events[index].categoryId ?? "",
+                    ),
+                    index: index,
                   );
                 },
               ));
