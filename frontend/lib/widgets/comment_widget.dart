@@ -201,8 +201,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                           flex: 2,
                           child: TextButton(
                             onPressed: () async {
-                              final isAdded =
-                                  await CommentsController.addComment(
+                              final data = await CommentsController.addComment(
                                 comment: commentController.text,
                                 postId: widget.widget.postModel.id ?? 'No id',
                                 userId: widget.widget.postModel.userId ??
@@ -212,7 +211,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                                     : 'THERAPIST',
                               );
 
-                              if (context.mounted && isAdded) {
+                              if (context.mounted && data.contains('success')) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Comment added successfully'),
@@ -224,8 +223,8 @@ class _CommentWidgetState extends State<CommentWidget> {
                               } else {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Failed to add comment'),
+                                    SnackBar(
+                                      content: Text(data),
                                     ),
                                   );
                                 }

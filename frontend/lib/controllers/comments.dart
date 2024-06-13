@@ -11,7 +11,7 @@ class CommentsController {
               body: json.encode({
                 "input": comment,
               }));
-      print(response.body);
+
       bool contains0 = response.body.contains("0");
       if (contains0) {
         return true;
@@ -34,7 +34,7 @@ class CommentsController {
     }
   }
 
-  static Future<bool> addComment(
+  static Future<String> addComment(
       {required String comment,
       required String postId,
       required String userId,
@@ -43,7 +43,7 @@ class CommentsController {
       bool isValid = await isValidComment(comment);
       print("is valid $isValid");
       if (isValid) {
-        return false;
+        return "No hate comments allowed.";
       }
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/comments'),
@@ -66,12 +66,12 @@ class CommentsController {
       print(response.body);
 
       if (response.statusCode == 200) {
-        return true;
+        return "Comment added successfully";
       } else {
-        return false;
+        return "Failed to add comment";
       }
     } catch (e) {
-      return false;
+      return "Failed to add comment";
     }
   }
 }
