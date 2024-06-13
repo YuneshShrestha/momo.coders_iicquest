@@ -190,8 +190,10 @@ class _CommentWidgetState extends State<CommentWidget> {
                                   const SnackBar(
                                     content: Text('Comment added successfully'),
                                   ),
+                                  // Refresh the comments
                                 );
-                                Navigator.of(context).pop();
+                                await getComments();
+                                // Navigator.of(context).pop();
                               } else {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
