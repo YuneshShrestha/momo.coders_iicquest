@@ -12,6 +12,39 @@ const app = express();
 
 app.use(express.json());
 
+// create comments
+app.post("/api/comments", async (req, res) => {
+  const { comment, postId, userId, userType } = req.body;
+  try {
+    const comments = await prisma.comments.create({
+      data: {
+        comment,
+        postId,
+        userId,
+        userType,
+      },
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// get comments by post
+app.get("/api/posts/:postId/comments", async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const comments = await prisma.comments.findMany({
+      where: {
+        postId,
+      },
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
 // get posts by category
 app.get("/api/categories/:categoryId/posts", async (req, res) => {
   const { categoryId } = req.params;
